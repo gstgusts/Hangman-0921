@@ -6,12 +6,35 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Game {
 
+    private static final int MaxRetryCount = 6;
+    private static final String HiddenSign = "_";
+
+    public int getRetryCount() {
+        return retryCount;
+    }
+
     private int retryCount;
-    private List<String> triedLetters;
+    private List<Character> triedLetters;
+
+    public String getNameToGuess() {
+        return nameToGuess;
+    }
+
     private String nameToGuess;
+
+    public String getHiddenName() {
+        return hiddenName;
+    }
+
+    public boolean isGameOver() {
+        return retryCount == MaxRetryCount || !hiddenName.contains(HiddenSign);
+    }
+
+    private String hiddenName;
 
     public Game() {
         restart();
@@ -20,22 +43,72 @@ public class Game {
     public void restart() {
         retryCount = 0;
         triedLetters = new ArrayList<>();
-        getRandomNameFromFile();
+        try {
+            getRandomNameFromFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public GuessResult guessLetter(Character letter) {
+        var lu = letter.toString().toUpperCase();
+
+        if(triedLetters.contains(lu.charAt(0))) {
+            return GuessResult.ALREADY_USED;
+        }
+
+        triedLetters.add(lu.charAt(0));
+
+        if(nameToGuess.toUpperCase().contains(lu)) {
+
+            var sb = new StringBuilder(hiddenName);
+
+            for (int i = 0; i < nameToGuess.length(); i++) {
+                if(nameToGuess.charAt(i) == letter) {
+                    sb.setCharAt(i, letter);
+                }
+            }
+
+            hiddenName = sb.toString();
+
+            return hiddenName.contains(HiddenSign) ? GuessResult.SUCCESS : GuessResult.WORD_GUEST;
+
+        } else {
+
+            ++retryCount;
+            return  retryCount == MaxRetryCount ? GuessResult.GAME_OVER : GuessResult.DOES_NOT_EXIST;
+        }
     }
 
     private void getRandomNameFromFile() {
         nameToGuess = "";
+        hiddenName = "";
 
         Path path = Paths.get("c:\\Temp\\hangman.txt");
 
         try {
             var lines = Files.readAllLines(path);
 
-            if(lines.size() > 0) {
-                // randomly pick one name from the list
-                nameToGuess = "";
-            }
+            System.out.println(lines.size());
 
+            if(lines.size() > 0) {
+
+                Random rnd = new Random();
+                int low = 0;
+                int high = lines.size();
+                var index = rnd.nextInt(high - low) + low;
+
+                nameToGuess = lines.get(index);
+
+                System.out.println(nameToGuess);
+
+                for (int i = 0; i < nameToGuess.length(); i++) {
+                    hiddenName += HiddenSign;
+                }
+
+            } else {
+                throw new IOException("Unable to get word from the file");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

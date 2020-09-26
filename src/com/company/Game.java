@@ -36,17 +36,17 @@ public class Game {
 
     private String hiddenName;
 
-    public Game() {
+    public Game() throws Exception {
         restart();
     }
 
-    public void restart() {
+    public void restart() throws Exception {
         retryCount = 0;
         triedLetters = new ArrayList<>();
         try {
             getRandomNameFromFile();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -80,11 +80,11 @@ public class Game {
         }
     }
 
-    private void getRandomNameFromFile() {
+    private void getRandomNameFromFile() throws Exception {
         nameToGuess = "";
         hiddenName = "";
 
-        Path path = Paths.get("c:\\Temp\\hangman.txt");
+        Path path = Paths.get("c:\\Temp\\hangman\\hangman.txt");
 
         try {
             var lines = Files.readAllLines(path);
@@ -107,10 +107,10 @@ public class Game {
                 }
 
             } else {
-                throw new IOException("Unable to get word from the file");
+                throw new Exception("Unable to get word from the file");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw e;
         }
     }
 }

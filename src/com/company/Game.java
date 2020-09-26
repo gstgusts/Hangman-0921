@@ -10,6 +10,7 @@ import java.util.Random;
 
 public class Game {
 
+    public static final String FileUrl = "c:\\Temp\\hangman\\";
     private static final int MaxRetryCount = 6;
     private static final String HiddenSign = "_";
 
@@ -84,7 +85,7 @@ public class Game {
         nameToGuess = "";
         hiddenName = "";
 
-        Path path = Paths.get("c:\\Temp\\hangman\\hangman.txt");
+        Path path = Paths.get(FileUrl + "hangman.txt");
 
         try {
             var lines = Files.readAllLines(path);

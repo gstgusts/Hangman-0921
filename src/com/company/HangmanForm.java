@@ -12,6 +12,7 @@ public class HangmanForm extends JFrame {
     private JLabel lblWordToGuess;
     private JTextField txtLetter;
     private JButton btnGuess;
+    private JButton btnRestart;
 
     private Game game;
 
@@ -71,11 +72,39 @@ public class HangmanForm extends JFrame {
             var result = game.guessLetter(txtLetter.getText().charAt(0));
 
             refreshGameState(result);
+
+            txtLetter.setText("");
         });
 
         mainPanel.add(btnGuess);
 
+        btnRestart = new JButton("Restart");
+        btnRestart.setBounds(180, 260, 100, 50);
+
+        btnRestart.addActionListener(e -> {
+            restartGame();
+        });
+
+        mainPanel.add(btnRestart);
+
         setContentPane(mainPanel);
+    }
+
+    private void restartGame() {
+        try {
+            game.restart();
+
+            txtLetter.setEnabled(true);
+            btnGuess.setEnabled(true);
+
+            lblWordToGuess.setText(getHiddenNameWithSpaces());
+
+            ImageIcon img = new ImageIcon(Game.FileUrl + "1.jpg");
+            hangmanPic.setIcon(img);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void refreshGameState(GuessResult guessResult) {
@@ -98,11 +127,19 @@ public class HangmanForm extends JFrame {
                 ImageIcon img = new ImageIcon(Game.FileUrl + "7.jpg");
                 hangmanPic.setIcon(img);
                 JOptionPane.showMessageDialog(null, "Sorry, game is over, the word was " + game.getNameToGuess());
+
+                txtLetter.setEnabled(false);
+                btnGuess.setEnabled(false);
+
                 break;
             }
             case WORD_GUEST -> {
                 JOptionPane.showMessageDialog(null,"Great job!!!");
                 lblWordToGuess.setText(getHiddenNameWithSpaces());
+
+                txtLetter.setEnabled(false);
+                btnGuess.setEnabled(false);
+
                 break;
             }
         }

@@ -53,20 +53,21 @@ public class Game {
 
     public GuessResult guessLetter(Character letter) {
         var lu = letter.toString().toUpperCase();
+        var letterInUppercase = lu.charAt(0);
 
-        if(triedLetters.contains(lu.charAt(0))) {
+        if(triedLetters.contains(letterInUppercase)) {
             return GuessResult.ALREADY_USED;
         }
 
-        triedLetters.add(lu.charAt(0));
+        triedLetters.add(letterInUppercase);
 
         if(nameToGuess.toUpperCase().contains(lu)) {
 
             var sb = new StringBuilder(hiddenName);
 
             for (int i = 0; i < nameToGuess.length(); i++) {
-                if(nameToGuess.charAt(i) == letter) {
-                    sb.setCharAt(i, letter);
+                if(nameToGuess.toUpperCase().charAt(i) == letterInUppercase) {
+                    sb.setCharAt(i, letterInUppercase);
                 }
             }
 
